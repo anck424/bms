@@ -114,47 +114,60 @@ export default function Contact() {
       />
       <div className="max-w-7xl mx-auto px-4 py-16">
         {/* Contact Methods */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <div className="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition-shadow">
-            <MapPin className="w-8 h-8 text-teal-600 mx-auto mb-4" />
-            <h3 className="font-semibold mb-2">Visit Us</h3>
-            <p className="text-gray-600">1234 Education Ave, Learning City, ED 12345</p>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          <div className="bg-white p-8 rounded-2xl shadow-lg text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+            <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <MapPin className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="font-bold text-lg mb-3 text-gray-800">Visit Us</h3>
+            <p className="text-gray-600 leading-relaxed">1st Floor, Park Plaza, BMS ACADEMY, Goner Rd, Jaipur, Rajasthan 302031</p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition-shadow">
-            <Phone className="w-8 h-8 text-teal-600 mx-auto mb-4" />
-            <h3 className="font-semibold mb-2">Call Us</h3>
-            <p className="text-gray-600">(123) 456-7890</p>
+          <div className="bg-white p-8 rounded-2xl shadow-lg text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Phone className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="font-bold text-lg mb-3 text-gray-800">Call Us</h3>
+            <p className="text-gray-600">
+              <a href="tel:9660038052" className="hover:text-teal-600 transition-colors">9660038052</a>
+            </p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition-shadow">
-            <Mail className="w-8 h-8 text-teal-600 mx-auto mb-4" />
-            <h3 className="font-semibold mb-2">Email Us</h3>
-            <p className="text-gray-600">info@BMSAcademy.com</p>
+          <div className="bg-white p-8 rounded-2xl shadow-lg text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Mail className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="font-bold text-lg mb-3 text-gray-800">Email Us</h3>
+            <p className="text-gray-600">
+              <a href="mailto:info@bmsacademy.com" className="hover:text-teal-600 transition-colors">info@bmsacademy.com</a>
+            </p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition-shadow">
-            <Clock className="w-8 h-8 text-teal-600 mx-auto mb-4" />
-            <h3 className="font-semibold mb-2">Working Hours</h3>
+          <div className="bg-white p-8 rounded-2xl shadow-lg text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+            <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Clock className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="font-bold text-lg mb-3 text-gray-800">Working Hours</h3>
             <p className="text-gray-600">Mon-Fri: 9AM-6PM</p>
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-12">
+        <div className="grid md:grid-cols-2 gap-16">
           {/* Contact Form */}
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Get in Touch</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-8">Get in Touch</h2>
             
             {submitStatus.message && (
-              <div className={`mb-6 p-4 rounded-md ${
+              <div className={`mb-6 p-4 rounded-xl ${
                 submitStatus.success 
-                  ? 'bg-green-100 text-green-800 border border-green-200' 
-                  : 'bg-red-100 text-red-800 border border-red-200'
+                  ? 'bg-green-50 text-green-800 border border-green-200' 
+                  : 'bg-red-50 text-red-800 border border-red-200'
               }`}>
                 {submitStatus.message}
               </div>
             )}
             
+            <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
                   Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -164,11 +177,11 @@ export default function Contact() {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200"
                 />
               </div>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
                   Email <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -178,11 +191,11 @@ export default function Contact() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200"
                 />
               </div>
               <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 mb-2">
                   Subject
                 </label>
                 <input
@@ -191,11 +204,11 @@ export default function Contact() {
                   name="subject"
                   value={formData.subject}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200"
                 />
               </div>
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="message" className="block text-sm font-semibold text-gray-700 mb-2">
                   Message <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -205,7 +218,7 @@ export default function Contact() {
                   onChange={handleChange}
                   required
                   rows="4"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200"
                 ></textarea>
               </div>
               <button
@@ -213,7 +226,7 @@ export default function Contact() {
                 disabled={isSubmitting}
                 className={`w-full bg-teal-600 text-white py-3 px-4 rounded-md hover:bg-teal-700 transition-colors ${
                   isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
-                }`}
+                } rounded-xl font-semibold`}
               >
                 {isSubmitting ? (
                   <span className="flex items-center justify-center">
@@ -228,19 +241,22 @@ export default function Contact() {
                 )}
               </button>
             </form>
+            </div>
           </div>
 
           {/* FAQ Section */}
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-8">Frequently Asked Questions</h2>
             <div className="space-y-6">
               {faqs.map((faq, index) => (
-                <div key={index} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2 flex items-center">
-                    <MessageSquare className="w-5 h-5 text-teal-600 mr-2" />
+                <div key={index} className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                  <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center">
+                    <div className="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center mr-3">
+                      <MessageSquare className="w-4 h-4 text-teal-600" />
+                    </div>
                     {faq.question}
                   </h3>
-                  <p className="text-gray-600">{faq.answer}</p>
+                  <p className="text-gray-600 leading-relaxed ml-11">{faq.answer}</p>
                 </div>
               ))}
             </div>
@@ -249,8 +265,8 @@ export default function Contact() {
 
         {/* Map Section */}
         <div className="mt-16">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Our Location</h2>
-          <div className="bg-gray-200 h-96 rounded-lg overflow-hidden">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8">Our Location</h2>
+          <div className="bg-gray-200 h-96 rounded-2xl overflow-hidden shadow-lg">
             <iframe 
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1141.7173914621787!2d75.89154905712184!3d26.867224599445578!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396db7a6349b51f7%3A0xd34e4be877b4c853!2sBMS%20ACADEMY!5e0!3m2!1sen!2sin!4v1749578480427!5m2!1sen!2sin"
               width="100%" 

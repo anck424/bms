@@ -108,9 +108,9 @@ const Navbar = () => {
             </div>
 
             {/* Sticky Navbar */}
-            <nav className={`sticky  top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white shadow-md' : 'bg-teal-50'}`}>
+            <nav className={`sticky top-0 w-full z-50 transition-all duration-300 backdrop-blur-md ${scrolled ? 'bg-white/95 shadow-lg border-b border-gray-100' : 'bg-white/90'}`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-0">
-                    <div className="flex items-center justify-between h-16">
+                    <div className="flex items-center justify-between h-18">
                         {/* Logo */}
                         <div className="flex-shrink-0 flex items-center">
                             <a href="/" className="flex items-center">
@@ -122,8 +122,8 @@ const Navbar = () => {
 
                         {/* Desktop Menu */}
                         <div className="hidden md:block">
-                            <div className="ml-10 flex items-center space-x-4">
-                                <a href="/" className="text-teal-600 hover:text-teal-800 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                            <div className="ml-10 flex items-center space-x-1">
+                                <a href="/" className="text-gray-700 hover:text-teal-600 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-teal-50">Home</a>
 
                                 {/* Enhanced Courses Dropdown */}
                                 <div
@@ -141,14 +141,14 @@ const Navbar = () => {
                                 >
                                     <button
                                         onClick={() => navigate('/courses')}
-                                        className="text-gray-600 cursor-pointer hover:text-teal-600 px-3 py-2 rounded-md text-sm font-medium flex items-center focus:outline-none">
+                                        className="text-gray-700 cursor-pointer hover:text-teal-600 px-4 py-2 rounded-lg text-sm font-medium flex items-center focus:outline-none transition-all duration-200 hover:bg-teal-50">
                                         Courses
                                         <ChevronDown size={16} className="ml-1" />
                                     </button>
 
                                     {showCoursesDropdown && (
                                         <div
-                                            className="absolute left-1/2 top-full mt-2 transform -translate-x-1/2 w-[90vw] max-w-6xl bg-white rounded-xl shadow-2xl z-50 p-0 flex border border-gray-100 overflow-hidden"
+                                            className="absolute left-1/2 top-full mt-3 transform -translate-x-1/2 w-[90vw] max-w-6xl bg-white rounded-2xl shadow-2xl z-50 p-0 flex border border-gray-100 overflow-hidden backdrop-blur-lg"
                                             onMouseEnter={() => {
                                                 if (dropdownTimeout) clearTimeout(dropdownTimeout);
                                                 setShowCoursesDropdown(true);
@@ -161,8 +161,8 @@ const Navbar = () => {
                                             }}
                                         >
                                             {/* Sidebar - Categories */}
-                                            <div className="w-2/5 bg-gradient-to-b from-slate-50 to-slate-100 border-r border-slate-200">
-                                                <div className="p-4 border-b border-slate-200 bg-white">
+                                            <div className="w-2/5 bg-gradient-to-b from-gray-50 to-gray-100 border-r border-gray-200">
+                                                <div className="p-6 border-b border-gray-200 bg-white">
                                                     <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
                                                         <BookOpen className="w-5 h-5 text-teal-600" />
                                                         Course Categories
@@ -288,8 +288,8 @@ const Navbar = () => {
                                     )}
                                 </div>
 
-                                <a href="/about" className="text-gray-600 hover:text-teal-600 px-3 py-2 rounded-md text-sm font-medium">About</a>
-                                <a href="/contact" className="text-gray-600 hover:text-teal-600 px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+                                <a href="/about" className="text-gray-700 hover:text-teal-600 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-teal-50">About</a>
+                                <a href="/contact" className="text-gray-700 hover:text-teal-600 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-teal-50">Contact</a>
 
                                 {/* Enhanced Courses Dropdown */}
                                 <div
@@ -305,14 +305,14 @@ const Navbar = () => {
                                         setDropdownTimeout(timeout);
                                     }}
                                 >
-                                    <button className="text-gray-600 cursor-pointer hover:text-teal-600 px-3 py-2 rounded-md text-sm font-medium flex items-center focus:outline-none">
+                                    <button className="text-gray-700 cursor-pointer hover:text-teal-600 px-4 py-2 rounded-lg text-sm font-medium flex items-center focus:outline-none transition-all duration-200 hover:bg-teal-50">
                                         Student Corner
                                         <ChevronDown size={16} className="ml-1" />
                                     </button>
 
                                     {showStudentCornerDropdown && (
                                         <div
-                                            className="absolute left-1/2 top-full mt-3 transform -translate-x-1/2 z-50"
+                                            className="absolute left-1/2 top-full mt-4 transform -translate-x-1/2 z-50"
                                             onMouseEnter={() => {
                                                 if (dropdownTimeout) clearTimeout(dropdownTimeout);
                                                 setShowStudentCornerDropdown(true);
@@ -325,15 +325,15 @@ const Navbar = () => {
                                             }}
                                         >
                                             {/* Arrow */}
-                                            <div className="absolute top-[-6px] left-1/2 transform -translate-x-1/2 w-3 h-3 bg-white rotate-45 border-l border-t border-gray-200 z-[-1]" />
+                                            <div className="absolute top-[-8px] left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white rotate-45 border-l border-t border-gray-200 z-[-1]" />
 
                                             {/* Dropdown Box */}
-                                            <div className="w-[300px] bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden">
+                                            <div className="w-[320px] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden backdrop-blur-lg">
                                                 <ul className="divide-y divide-gray-200">
                                                     <li>
                                                         <a
                                                             href="/certificate-verification"
-                                                            className="block px-5 py-4 text-gray-700 hover:bg-teal-50 hover:text-teal-600 transition-colors duration-150"
+                                                            className="block px-6 py-4 text-gray-700 hover:bg-teal-50 hover:text-teal-600 transition-all duration-200 font-medium"
                                                         >
                                                             🎓 Certificate Verification
                                                         </a>
@@ -341,7 +341,7 @@ const Navbar = () => {
                                                     <li>
                                                         <a
                                                             href="/offers-and-schemes"
-                                                            className="block px-5 py-4 text-gray-700 hover:bg-teal-50 hover:text-teal-600 transition-colors duration-150"
+                                                            className="block px-6 py-4 text-gray-700 hover:bg-teal-50 hover:text-teal-600 transition-all duration-200 font-medium"
                                                         >
                                                             💡 Offers and Schemes
                                                         </a>
@@ -351,7 +351,7 @@ const Navbar = () => {
                                         </div>
                                     )}
                                 </div>
-                                <a href="/activities" className="text-gray-600 hover:text-teal-600 px-3 py-2 rounded-md text-sm font-medium">Activities</a>
+                                <a href="/activities" className="text-gray-700 hover:text-teal-600 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-teal-50">Activities</a>
 
 
                             </div>
