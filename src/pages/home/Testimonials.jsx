@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Star } from "lucide-react";
+import { TestimonialCardSkeleton } from "../../components/common/SkeletonLoader";
 
 export default function CoachingTestimonials() {
   const [testimonials, setTestimonials] = useState([]);
@@ -9,13 +10,23 @@ export default function CoachingTestimonials() {
   useEffect(() => {
     async function fetchTestimonials() {
       try {
-        const res = await fetch(`${import.meta.env.VITE_REACT_APP_API_BASE_URL}/api/testimonials`); // adjust base URL as needed
-        if (!res.ok) throw new Error("Failed to fetch testimonials");
+        const res = await fetch(`${import.meta.env.VITE_REACT_APP_API_BASE_URL}/api/testimonials`);
+        if (!res.ok) {
+          throw new Error(`Failed to fetch testimonials: ${res.status} ${res.statusText}`);
+        }
+        
+        // Check if response is actually JSON
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Backend server is not responding with JSON. Please ensure the backend is running.');
+        }
+        
         const data = await res.json();
         setTestimonials(data);
         setLoading(false);
       } catch (err) {
-        setError(err.message);
+        console.error('Error fetching testimonials:', err);
+        setError(err.message || 'Failed to connect to backend. Please ensure the backend server is running.');
         setLoading(false);
       }
     }
@@ -23,7 +34,22 @@ export default function CoachingTestimonials() {
     fetchTestimonials();
   }, []);
 
-  if (loading) return <p className="text-center">Loading testimonials...</p>;
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-16">
+        <h2 className="text-4xl font-bold text-center mb-16">
+          What our clients say about{" "}
+          <span className="text-purple-600">Peak Coaching</span>
+        </h2>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <TestimonialCardSkeleton key={i} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (

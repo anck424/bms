@@ -5,6 +5,7 @@ import img1 from "../assets/banners/courses.png";
 import { Link } from 'react-router-dom';
 import Modal from '../components/Modal';
 import EnrollmentForm from '../components/EnrollmentForm';
+import { CourseCardSkeleton, StatsCardSkeleton } from '../components/common/SkeletonLoader';
 
 export default function Courses() {
   const [allCourses, setAllCourses] = useState([]);
@@ -20,7 +21,16 @@ export default function Courses() {
     async function fetchCourses() {
       try {
         const res = await fetch(`${import.meta.env.VITE_REACT_APP_API_BASE_URL}/api/courses`);
-        if (!res.ok) throw new Error('Failed to fetch courses');
+        if (!res.ok) {
+          throw new Error(`Failed to fetch courses: ${res.status} ${res.statusText}`);
+        }
+        
+        // Check if response is actually JSON
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Backend server is not responding with JSON. Please ensure the backend is running.');
+        }
+        
         const data = await res.json();
 
         const flattened = data.flatMap(group =>
@@ -33,7 +43,8 @@ export default function Courses() {
         setAllCourses(flattened);
         setLoading(false);
       } catch (err) {
-        setError(err.message);
+        console.error('Error fetching courses:', err);
+        setError(err.message || 'Failed to connect to backend. Please ensure the backend server is running.');
         setLoading(false);
       }
     }
@@ -69,6 +80,45 @@ export default function Courses() {
   ];
 
   if (loading) return <p className="text-center py-10">Loading courses...</p>;
+  if (error) return <p className="text-center text-red-500 py-10">{error}</p>;
+
+  if (loading) {
+    return (
+      <div>
+        <Header
+          image={img1}
+          heading="Our Courses"
+          subheading="Explore our wide range of courses designed to help you achieve your goals"
+        />
+        <div className="max-w-7xl mx-auto px-4 py-16">
+          {/* Stats Skeleton */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+            {[1, 2, 3, 4].map((i) => (
+              <StatsCardSkeleton key={i} />
+            ))}
+          </div>
+          
+          {/* Search and Filter Skeleton */}
+          <div className="flex flex-col md:flex-row justify-between gap-4 mb-8">
+            <div className="w-full md:w-96 h-10 bg-gray-300 rounded-md animate-pulse"></div>
+            <div className="flex gap-2">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-10 w-20 bg-gray-300 rounded-md animate-pulse"></div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Courses Grid Skeleton */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <CourseCardSkeleton key={i} />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (error) return <p className="text-center text-red-500 py-10">{error}</p>;
 
   return (

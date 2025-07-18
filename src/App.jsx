@@ -14,6 +14,8 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import DashboardCourses from './pages/dashboard/Dashboard.Courses';
 import DashboardTestimonials from './pages/dashboard/Dashboard.Testimonial';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 // Lazy loaded components
 const Home = lazy(() => import("./pages/Home"));
@@ -54,6 +56,17 @@ export default function App() {
               </Suspense>
               <Newsletter />
               <Footer />
+              <ToastContainer 
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+              />
             </div>
           </Router>
         </ErrorBoundary>

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import AvatarGroup from '../../components/AvatarGroup';
 import Modal from '../../components/Modal';
 import EnrollmentForm from '../../components/EnrollmentForm';
+import { PopularCourseCardSkeleton } from '../../components/common/SkeletonLoader';
 
 
 const PopularCourses = () => {
@@ -22,7 +23,16 @@ const PopularCourses = () => {
     async function fetchCourses() {
       try {
         const res = await fetch(`${import.meta.env.VITE_REACT_APP_API_BASE_URL}/api/courses`);
-        if (!res.ok) throw new Error('Failed to fetch courses');
+        if (!res.ok) {
+          throw new Error(`Failed to fetch courses: ${res.status} ${res.statusText}`);
+        }
+        
+        // Check if response is actually JSON
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Backend server is not responding with JSON. Please ensure the backend is running.');
+        }
+        
         const data = await res.json();
 
 
@@ -40,7 +50,8 @@ const PopularCourses = () => {
         setAllCourses(flattened);
         setLoading(false);
       } catch (err) {
-        setError(err.message);
+        console.error('Error fetching courses:', err);
+        setError(err.message || 'Failed to connect to backend. Please ensure the backend server is running.');
         setLoading(false);
       }
     }
@@ -64,7 +75,32 @@ const PopularCourses = () => {
   const popularCourses = filteredCourses.sort((a, b) => b.students - a.students).slice(0, 4);
 
 
-  if (loading) return <p className="text-center">Loading courses...</p>;
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        {/* Section Title */}
+        <div className="text-center mb-8 relative">
+          <h2 className="text-4xl font-bold text-orange-500">Popular Courses</h2>
+          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-blue-400 rounded-full"></div>
+        </div>
+
+        {/* Category Buttons Skeleton */}
+        <div className="flex flex-wrap gap-3 mb-8 justify-center">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-10 w-32 bg-gray-300 rounded-md animate-pulse"></div>
+          ))}
+        </div>
+
+        {/* Course Cards Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map((i) => (
+            <PopularCourseCardSkeleton key={i} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
 

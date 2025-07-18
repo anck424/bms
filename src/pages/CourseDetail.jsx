@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Clock, Users, DollarSign, Award, CheckCircle, Star, Calendar, BookOpen, Target, Trophy } from 'lucide-react';
+import { CourseDetailSkeleton } from '../components/common/SkeletonLoader';
 
 const CourseDetailPage = () => {
     const [activeTab, setActiveTab] = useState('overview');
@@ -18,6 +19,13 @@ const CourseDetailPage = () => {
                 if (!res.ok) {
                     throw new Error(`Failed to fetch course data: ${res.statusText}`);
                 }
+                
+                // Check if response is actually JSON
+                const contentType = res.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Backend server is not responding with JSON. Please ensure the backend is running.');
+                }
+                
                 return res.json();
             })
             .then(data => {
@@ -25,13 +33,14 @@ const CourseDetailPage = () => {
                 setLoading(false);
             })
             .catch(err => {
+                console.error('Error fetching course data:', err);
                 setError(err.message);
                 setLoading(false);
             });
     }, [courseId]);
 
     if (loading) {
-        return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>;
+        return <CourseDetailSkeleton />;
     }
 
     if (error) {
