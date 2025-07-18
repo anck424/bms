@@ -111,6 +111,22 @@ const Dashboard = () => {
       cardLink: '/dashboard/settings',
       count: null
     }
+    {
+      title: 'Offers & Schemes',
+      description: 'Manage promotional offers and schemes',
+      bg: 'bg-orange-100',
+      icon: <Tag className="w-6 h-6" />,
+      cardLink: '/dashboard/offers',
+      count: null
+    },
+    {
+      title: 'Certificates',
+      description: 'Manage and verify certificates',
+      bg: 'bg-yellow-100',
+      icon: <Award className="w-6 h-6" />,
+      cardLink: '/dashboard/certificates',
+      count: null
+    }
   ];
 
   return (

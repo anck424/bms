@@ -16,6 +16,8 @@ import DashboardCourses from './pages/dashboard/Dashboard.Courses';
 import DashboardTestimonials from './pages/dashboard/Dashboard.Testimonial';
 import DashboardContacts from './pages/dashboard/Dashboard.Contacts';
 import DashboardEnrollments from './pages/dashboard/Dashboard.Enrollments';
+import DashboardOffers from './pages/dashboard/Dashboard.Offers';
+import DashboardCertificates from './pages/dashboard/Dashboard.Certificates';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 
@@ -55,6 +57,8 @@ export default function App() {
                   <Route path="/dashboard/testimonials" element={<DashboardTestimonials />} />
                   <Route path="/dashboard/contacts" element={<DashboardContacts />} />
                   <Route path="/dashboard/enrollments" element={<DashboardEnrollments />} />
+                  <Route path="/dashboard/offers" element={<DashboardOffers />} />
+                  <Route path="/dashboard/certificates" element={<DashboardCertificates />} />
                   {/* Add more routes as needed */}
                 </Routes>
               </Suspense>

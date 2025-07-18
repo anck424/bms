@@ -47,23 +47,28 @@ const CertificationVerificationPage = () => {
 
         // Simulate API call
         setTimeout(() => {
-            const result = mockCertificates[certificateId];
-            if (result) {
-                setVerificationResult(result);
-                // Add to search history
-                setSearchHistory(prev => [
-                    { id: certificateId, timestamp: new Date(), valid: true },
-                    ...prev.slice(0, 4)
-                ]);
-            } else {
-                setVerificationResult({ valid: false, certificateId });
-                setSearchHistory(prev => [
-                    { id: certificateId, timestamp: new Date(), valid: false },
-                    ...prev.slice(0, 4)
-                ]);
-            }
-            setIsLoading(false);
-        }, 2000);
+            // Real API call
+            fetch(`${import.meta.env.VITE_REACT_APP_API_BASE_URL}/api/certificates/verify/${certificateId}`)
+                .then(res => res.json())
+                .then(data => {
+                    setVerificationResult(data);
+                    setSearchHistory(prev => [
+                        { id: certificateId, timestamp: new Date(), valid: data.valid },
+                        ...prev.slice(0, 4)
+                    ]);
+                })
+                .catch(err => {
+                    console.error('Verification error:', err);
+                    setVerificationResult({ valid: false, certificateId });
+                    setSearchHistory(prev => [
+                        { id: certificateId, timestamp: new Date(), valid: false },
+                        ...prev.slice(0, 4)
+                    ]);
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
+        }, 1000);
     };
 
     const handleShare = (certificate) => {

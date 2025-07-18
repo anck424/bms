@@ -62,7 +62,7 @@ export default function Contact() {
     }
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_REACT_APP_API_BASE_URL}/api/contact`, {
+      const response = await fetch(`${import.meta.env.VITE_REACT_APP_API_BASE_URL}/api/contacts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -85,7 +85,7 @@ export default function Contact() {
           message: ''
         });
       } else {
-        throw new Error(data.error || 'Failed to send message. Please try again later.');
+        throw new Error(data.error || data.message || 'Failed to send message. Please try again later.');
       }
     } catch (error) {
       console.error('Error:', error);

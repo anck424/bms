@@ -4,32 +4,29 @@ import Header from '../components/common/Header';
 import banner from '../assets/banners/offers.png'; // Adjust the path as necessary
 
 const OffersAndSchemes = () => {
-  const currentOffers = [
-    {
-      title: "Early Bird Discount",
-      discount: "25% OFF",
-      validUntil: "December 31, 2024",
-      description: "Register early for any course and get 25% off on the total course fee.",
-      code: "EARLY25",
-      conditions: [
-        "Valid for new registrations only",
-        "Cannot be combined with other offers",
-        "Full payment required"
-      ]
-    },
-    {
-      title: "Group Enrollment Offer",
-      discount: "30% OFF",
-      validUntil: "January 15, 2025",
-      description: "Enroll with a group of 3 or more and get 30% discount for each student.",
-      code: "GROUP30",
-      conditions: [
-        "Minimum 3 students required",
-        "Same course enrollment",
-        "Valid for all courses"
-      ]
-    }
-  ];
+  const [currentOffers, setCurrentOffers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchOffers = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_REACT_APP_API_BASE_URL}/api/offers/active`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch offers');
+        }
+        const data = await response.json();
+        setCurrentOffers(data);
+      } catch (err) {
+        console.error('Error fetching offers:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOffers();
+  }, []);
 
   const scholarships = [
     {
@@ -64,6 +61,35 @@ const OffersAndSchemes = () => {
       {/* Current Offers */}
       <section className="mb-16">
         <h2 className="text-3xl font-bold mb-8">Current Offers</h2>
+        {loading ? (
+          <div className="grid md:grid-cols-2 gap-8">
+            {[1, 2].map((i) => (
+              <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 animate-pulse">
+                <div className="bg-gray-200 p-6 border-b">
+                  <div className="h-6 bg-gray-300 rounded w-3/4 mb-2"></div>
+                  <div className="h-8 bg-gray-300 rounded w-1/2"></div>
+                </div>
+                <div className="p-6">
+                  <div className="h-4 bg-gray-300 rounded w-full mb-4"></div>
+                  <div className="h-16 bg-gray-300 rounded mb-4"></div>
+                  <div className="h-4 bg-gray-300 rounded w-1/2 mb-4"></div>
+                  <div className="space-y-2">
+                    <div className="h-4 bg-gray-300 rounded w-full"></div>
+                    <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="text-center text-red-500 py-8">
+            <p>Error loading offers: {error}</p>
+          </div>
+        ) : currentOffers.length === 0 ? (
+          <div className="text-center text-gray-500 py-8">
+            <p>No active offers available at the moment.</p>
+          </div>
+        ) : (
         <div className="grid md:grid-cols-2 gap-8">
           {currentOffers.map((offer, index) => (
             <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
@@ -84,7 +110,7 @@ const OffersAndSchemes = () => {
                 </div>
                 <div className="flex items-center text-gray-600 mb-4">
                   <Clock className="w-5 h-5 mr-2" />
-                  <span>Valid until {offer.validUntil}</span>
+                  <span>Valid until {new Date(offer.validUntil).toLocaleDateString()}</span>
                 </div>
                 <div>
                   <div className="font-semibold mb-2">Conditions:</div>
@@ -104,6 +130,7 @@ const OffersAndSchemes = () => {
             </div>
           ))}
         </div>
+        )}
       </section>
 
       {/* Scholarships */}

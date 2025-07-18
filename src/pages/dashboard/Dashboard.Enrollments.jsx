@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone, Calendar, Eye, Trash2, Search, Filter, BookOpen, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
-import { toast } from 'react-toastify';
+import { Plus, Edit, Trash2, Search, Filter, Eye, Mail, Phone, Clock, User, X, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import { ListSkeleton } from '../../components/common/SkeletonLoader';
 
 const DashboardEnrollments = () => {
   const [enrollments, setEnrollments] = useState([]);
@@ -16,17 +18,17 @@ const DashboardEnrollments = () => {
 
   const fetchEnrollments = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_REACT_APP_API_BASE_URL}/api/enrollments`);
-      if (response.ok) {
-        const data = await response.json();
-        setEnrollments(data);
-      } else {
-        throw new Error('Failed to fetch enrollments');
-      }
-    } catch (error) {
-      console.error('Error fetching enrollments:', error);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${import.meta.env.VITE_REACT_APP_API_BASE_URL}/api/enrollments`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+      setEnrollments(response.data);
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching enrollments:', err);
       toast.error('Failed to fetch enrollments');
-    } finally {
       setLoading(false);
     }
   };
@@ -47,24 +49,27 @@ const DashboardEnrollments = () => {
 
   const handleUpdateStatus = async (id, newStatus) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_REACT_APP_API_BASE_URL}/api/enrollments/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
-
-      if (response.ok) {
-        setEnrollments(prev => prev.map(e => 
-          e.id === id ? { ...e, status: newStatus } : e
-        ));
-        toast.success(`Enrollment status updated to ${newStatus}`);
-      } else {
-        throw new Error('Failed to update status');
+      const token = localStorage.getItem('token');
+      await axios.put(`${import.meta.env.VITE_REACT_APP_API_BASE_URL}/api/enrollments/${id}`, 
+        { status: newStatus }, 
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        }
+      );
+      
+      setEnrollments(prev => prev.map(e => 
+        e._id === id ? { ...e, status: newStatus } : e
+      ));
+      
+      if (selectedEnrollment && selectedEnrollment._id === id) {
+        setSelectedEnrollment(prev => ({ ...prev, status: newStatus }));
       }
-    } catch (error) {
-      console.error('Error updating status:', error);
+      
+      toast.success(`Enrollment status updated to ${newStatus}`);
+    } catch (err) {
+      console.error('Error updating status:', err);
       toast.error('Failed to update enrollment status');
     }
   };
@@ -72,18 +77,17 @@ const DashboardEnrollments = () => {
   const handleDeleteEnrollment = async (id) => {
     if (window.confirm('Are you sure you want to delete this enrollment?')) {
       try {
-        const response = await fetch(`${import.meta.env.VITE_REACT_APP_API_BASE_URL}/api/enrollments/${id}`, {
-          method: 'DELETE',
+        const token = localStorage.getItem('token');
+        await axios.delete(`${import.meta.env.VITE_REACT_APP_API_BASE_URL}/api/enrollments/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
         });
-
-        if (response.ok) {
-          setEnrollments(prev => prev.filter(e => e.id !== id));
-          toast.success('Enrollment deleted successfully');
-        } else {
-          throw new Error('Failed to delete enrollment');
-        }
-      } catch (error) {
-        console.error('Error deleting enrollment:', error);
+        
+        setEnrollments(prev => prev.filter(e => e._id !== id));
+        toast.success('Enrollment deleted successfully');
+      } catch (err) {
+        console.error('Error deleting enrollment:', err);
         toast.error('Failed to delete enrollment');
       }
     }
@@ -94,7 +98,7 @@ const DashboardEnrollments = () => {
       pending: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Pending', icon: AlertCircle },
       approved: { bg: 'bg-green-100', text: 'text-green-800', label: 'Approved', icon: CheckCircle },
       rejected: { bg: 'bg-red-100', text: 'text-red-800', label: 'Rejected', icon: XCircle },
-      enrolled: { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Enrolled', icon: BookOpen }
+      enrolled: { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Enrolled', icon: CheckCircle }
     };
     
     const config = statusConfig[status] || statusConfig.pending;
@@ -128,131 +132,96 @@ const DashboardEnrollments = () => {
   };
 
   const statusCounts = getStatusCounts();
+  const categories = ['All', 'Pending', 'Approved', 'Rejected', 'Enrolled'];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-100 p-6">
+      <ToastContainer position="top-right" autoClose={3000} />
+      
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Course Enrollments</h1>
-            <p className="text-gray-600 mt-2">Manage student enrollment applications</p>
-          </div>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Course Enrollments</h1>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <User className="w-6 h-6 text-blue-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Applications</p>
-                <p className="text-2xl font-bold text-gray-900">{statusCounts.total}</p>
-              </div>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+          <div className="bg-white p-6 rounded-lg shadow-md text-center">
+            <div className="text-3xl font-bold text-blue-600 mb-2">{statusCounts.total}</div>
+            <div className="text-gray-600">Total Applications</div>
           </div>
-          
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <AlertCircle className="w-6 h-6 text-yellow-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Pending Review</p>
-                <p className="text-2xl font-bold text-gray-900">{statusCounts.pending}</p>
-              </div>
-            </div>
+          <div className="bg-white p-6 rounded-lg shadow-md text-center">
+            <div className="text-3xl font-bold text-yellow-600 mb-2">{statusCounts.pending}</div>
+            <div className="text-gray-600">Pending Review</div>
           </div>
-          
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <CheckCircle className="w-6 h-6 text-green-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Approved</p>
-                <p className="text-2xl font-bold text-gray-900">{statusCounts.approved}</p>
-              </div>
-            </div>
+          <div className="bg-white p-6 rounded-lg shadow-md text-center">
+            <div className="text-3xl font-bold text-green-600 mb-2">{statusCounts.approved}</div>
+            <div className="text-gray-600">Approved</div>
           </div>
-          
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <BookOpen className="w-6 h-6 text-blue-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Enrolled</p>
-                <p className="text-2xl font-bold text-gray-900">{statusCounts.enrolled}</p>
-              </div>
-            </div>
+          <div className="bg-white p-6 rounded-lg shadow-md text-center">
+            <div className="text-3xl font-bold text-blue-600 mb-2">{statusCounts.enrolled}</div>
+            <div className="text-gray-600">Enrolled</div>
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+        {/* Search and Filter */}
+        <div className="bg-white rounded-lg shadow-md p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <input
                   type="text"
-                  placeholder="Search by name, email, or course..."
+                  placeholder="Search enrollments..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                  className="w-full pl-10 pr-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Filter className="h-5 w-5 text-gray-400" />
+              <Filter className="h-4 w-4 text-gray-400" />
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                className="px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
               >
-                <option value="All">All Status</option>
-                <option value="Pending">Pending</option>
-                <option value="Approved">Approved</option>
-                <option value="Rejected">Rejected</option>
-                <option value="Enrolled">Enrolled</option>
+                {categories.map(category => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
               </select>
             </div>
           </div>
         </div>
 
-        {/* Enrollments Table */}
+        {/* Enrollments List */}
         {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
-          </div>
+          <ListSkeleton items={6} />
         ) : (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Student
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Course
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Applied Date
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredEnrollments.map((enrollment) => (
-                    <tr key={enrollment.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={enrollment._id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-teal-600 rounded-full flex items-center justify-center">
@@ -285,31 +254,31 @@ const DashboardEnrollments = () => {
                         <div className="flex space-x-2">
                           <button
                             onClick={() => handleViewEnrollment(enrollment)}
-                            className="text-teal-600 hover:text-teal-900 transition-colors"
-                            title="View Details"
+                            className="text-blue-600 hover:text-blue-900"
+                            title="View"
                           >
-                            <Eye className="h-5 w-5" />
+                            <Eye className="h-4 w-4" />
                           </button>
                           <a
                             href={`mailto:${enrollment.email}`}
-                            className="text-blue-600 hover:text-blue-900 transition-colors"
-                            title="Send Email"
+                            className="text-green-600 hover:text-green-900"
+                            title="Email"
                           >
-                            <Mail className="h-5 w-5" />
+                            <Mail className="h-4 w-4" />
                           </a>
                           <a
                             href={`tel:${enrollment.phone}`}
-                            className="text-green-600 hover:text-green-900 transition-colors"
+                            className="text-purple-600 hover:text-purple-900"
                             title="Call"
                           >
-                            <Phone className="h-5 w-5" />
+                            <Phone className="h-4 w-4" />
                           </a>
                           <button
-                            onClick={() => handleDeleteEnrollment(enrollment.id)}
-                            className="text-red-600 hover:text-red-900 transition-colors"
+                            onClick={() => handleDeleteEnrollment(enrollment._id)}
+                            className="text-red-600 hover:text-red-900"
                             title="Delete"
                           >
-                            <Trash2 className="h-5 w-5" />
+                            <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
                       </td>
@@ -324,7 +293,7 @@ const DashboardEnrollments = () => {
         {/* Enrollment Detail Modal */}
         {showModal && selectedEnrollment && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               <div className="p-6 border-b border-gray-200">
                 <div className="flex justify-between items-start">
                   <div>
@@ -335,11 +304,9 @@ const DashboardEnrollments = () => {
                   </div>
                   <button
                     onClick={() => setShowModal(false)}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                    className="text-gray-400 hover:text-gray-600"
                   >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    <X className="w-6 h-6" />
                   </button>
                 </div>
               </div>
@@ -378,7 +345,7 @@ const DashboardEnrollments = () => {
                   </div>
                   
                   <div className="flex items-center text-sm text-gray-500">
-                    <Calendar className="w-4 h-4 mr-2" />
+                    <Clock className="w-4 h-4 mr-2" />
                     Applied on {formatDate(selectedEnrollment.createdAt)}
                   </div>
                   
@@ -387,26 +354,26 @@ const DashboardEnrollments = () => {
                     <h5 className="font-medium text-gray-900 mb-4">Update Status</h5>
                     <div className="flex flex-wrap gap-3">
                       <button
-                        onClick={() => handleUpdateStatus(selectedEnrollment.id, 'approved')}
-                        className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors font-medium"
+                        onClick={() => handleUpdateStatus(selectedEnrollment._id, 'approved')}
+                        className="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors"
                       >
                         Approve
                       </button>
                       <button
-                        onClick={() => handleUpdateStatus(selectedEnrollment.id, 'rejected')}
-                        className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors font-medium"
+                        onClick={() => handleUpdateStatus(selectedEnrollment._id, 'rejected')}
+                        className="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition-colors"
                       >
                         Reject
                       </button>
                       <button
-                        onClick={() => handleUpdateStatus(selectedEnrollment.id, 'enrolled')}
-                        className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                        onClick={() => handleUpdateStatus(selectedEnrollment._id, 'enrolled')}
+                        className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
                       >
                         Mark as Enrolled
                       </button>
                       <button
-                        onClick={() => handleUpdateStatus(selectedEnrollment.id, 'pending')}
-                        className="bg-yellow-600 text-white py-2 px-4 rounded-lg hover:bg-yellow-700 transition-colors font-medium"
+                        onClick={() => handleUpdateStatus(selectedEnrollment._id, 'pending')}
+                        className="bg-yellow-600 text-white py-2 px-4 rounded-md hover:bg-yellow-700 transition-colors"
                       >
                         Mark as Pending
                       </button>
@@ -416,13 +383,13 @@ const DashboardEnrollments = () => {
                   <div className="flex space-x-3 pt-4 border-t border-gray-200">
                     <a
                       href={`mailto:${selectedEnrollment.email}?subject=Regarding your course enrollment application`}
-                      className="flex-1 bg-teal-600 text-white py-3 px-4 rounded-lg hover:bg-teal-700 transition-colors text-center font-medium"
+                      className="flex-1 bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 transition-colors text-center"
                     >
                       Send Email
                     </a>
                     <a
                       href={`tel:${selectedEnrollment.phone}`}
-                      className="flex-1 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors text-center font-medium"
+                      className="flex-1 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors text-center"
                     >
                       Call Student
                     </a>

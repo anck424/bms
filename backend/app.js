@@ -8,7 +8,10 @@ require('./config/db')();
 const adminRoutes = require('./routes/adminRoutes');
 const courseRoutes = require('./routes/courseRoutes');
 const testimonialRoutes = require('./routes/testimonialRoutes');
-const enrollmentRoutes = require('./routes/enrollments');
+const contactRoutes = require('./routes/contactRoutes');
+const enrollmentRoutes = require('./routes/enrollmentRoutes');
+const offerRoutes = require('./routes/offerRoutes');
+const certificateRoutes = require('./routes/certificateRoutes');
 const job = require('./config/cron'); // ✅ Import the cron job
 
 // Start cron job only in non-production
@@ -37,9 +40,11 @@ app.use(express.json());
 
 app.use('/api/admin', adminRoutes);
 app.use('/api/courses', courseRoutes);
-app.use('/api/contact', require('./routes/contact'));
+app.use('/api/contacts', contactRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/enrollments', enrollmentRoutes);
+app.use('/api/offers', offerRoutes);
+app.use('/api/certificates', certificateRoutes);
 
 app.get('/', (req, res) => res.send('API is running...'));
 
